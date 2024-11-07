@@ -1,0 +1,6 @@
+@PradCat.Api_HostAddress = http://localhost:5105
+
+GET {{PradCat.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
