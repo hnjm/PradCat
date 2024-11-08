@@ -1,7 +1,163 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>PradCat - Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="row">
+    <div class="col-lg-7 align-content-center ps-lg-5 mb-5">
+        <div class="text-center text-lg-start col col-xxl-8">
+            <h1 class="display-4 fw-bold text-primary-prad">Seu gatinho merece o melhor cuidado!</h1>
+            <p class="fs-4 my-5 text-muted">
+                Oferecemos cuidados especiais em um ambiente acolhedor e divertido.
+                Deixe seu felino nas mãos de quem entende e ama gatos de verdade.
+            </p>
+            <a class="btn btn-primary-prad fs-5 py-3 px-5">Cadastre-se</a>
+        </div>
+        <div class="d-none d-xl-block position-relative">
+            <i class="fa-solid fa-paw paw" id="greater-paw"></i>
+            <i class="fa-solid fa-paw paw" id="lesser-paw"></i>
+        </div>
+    </div>
+    <div class="col-lg-5 d-none d-lg-block right-side g-0">
+        <div class="home-img-container">
+            <img src="images/site-assets/cat.png" alt="cat" id="cat-img" />
+        </div>
+    </div>
+</div>
+<div class="row bg-offwhite-prad justify-content-evenly p-row">
+    <div class="col-7 col-lg-3 my-auto">
+        <div class="card text-white text-center bg-dark-prad p-3">
+            <img src="images/site-assets/stethoscope.png" class="card-img" />
+            <div class="card-body">
+                <h2 class="card-title fw-bold py-5">Consultas Veterinárias</h2>
+                <p class="card-text">
+                    Nossos veterinários especializados realizam check-ups completos,
+                    diagnósticos precisos e planos de tratamento personalizados
+                    para garantir a saúde e o bem-estar do seu gato.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-8 col-lg-3 my-5 my-lg-0">
+        <div class="card text-black text-center bg-outline-primary-prad px-3 py-5" id="greater-card">
+            <img src="images/site-assets/scalpel.png" class="card-img" />
+            <div class="card-body">
+                <h2 class="card-title fw-bold py-5">Procedimentos Cirúrgicos</h2>
+                <p class="card-text">
+                    Oferecemos uma ampla gama de procedimentos cirúrgicos,
+                    desde esterilizações até cirurgias mais complexas,
+                    com equipamentos modernos e técnicas avançadas para
+                    a segurança do seu felino.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-7 col-lg-3 my-auto">
+        <div class="card text-white text-center bg-dark-prad p-3">
+            <img src="images/site-assets/vaccine.png" class="card-img" />
+            <div class="card-body">
+                <h2 class="card-title fw-bold py-5">Vacinação e Prevenção</h2>
+                <p class="card-text">
+                    Mantemos o calendário de vacinas do seu gato em dia e oferecemos
+                    programas de prevenção contra parasitas, garantindo proteção
+                    contra doenças comuns e proporcionando uma vida longa e saudável.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row p-row bg-dark-prad text-white">
+    <div class="col">
+        <div id="carouselReviews" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselReviews" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselReviews" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselReviews" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner py-5">
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <img src="/images/site-assets/owner-1.png" class="d-block w-100 rounded-circle">
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <figure class="text-end">
+                                <blockquote class="blockquote">
+                                    <p>
+                                        <i class="fa-solid fa-quote-left text-secondary-prad"></i>
+                                        Excelente atendimento e ambiente acolhedor. Amei!
+                                        <i class="fa-solid fa-quote-right text-secondary-prad"></i>
+                                    </p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                    <strong>Bianca Ribeiro</strong>, 25 anos.
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <img src="/images/site-assets/owner-2.png" class="d-block w-100 rounded-circle">
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <figure class="text-end">
+                                <blockquote class="blockquote">
+                                    <p>
+                                        <i class="fa-solid fa-quote-left text-secondary-prad"></i>
+                                        A equipe é atenciosa e profissional. A clínica é limpa, bem decorada e confortável para os gatos. Recomendo!
+                                        <i class="fa-solid fa-quote-right text-secondary-prad"></i>
+                                    </p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                    <strong>Renata Almeida</strong>, 29 anos.
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <img src="/images/site-assets/owner-3.png" class="d-block w-100 rounded-circle">
+                        </div>
+                        <div class="col-4 align-self-center">
+                            <figure class="text-end">
+                                <blockquote class="blockquote">
+                                    <p>
+                                        <i class="fa-solid fa-quote-left text-secondary-prad"></i>
+                                        Os profissionais mostram grande conhecimento e cuidado. Os valores são inacreditáveis pela a qualidade oferecida.
+                                        <i class="fa-solid fa-quote-right text-secondary-prad"></i>
+                                    </p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                    <strong>Moacir Viana</strong>, 51 anos.
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselReviews" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselReviews" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row p-row justify-content-center">
+    <div class="col-6 text-center">
+        <h1 class="display-4 fw-bold text-secondary-prad">Seu pet merece um atendimento catfriendly de verdade!</h1>
+        <p class="fs-4 my-5 text-muted">
+            Nossa equipe é extremamente apaixonada pelo o que faz!
+            Cadastre-se e agende sua consulta agora mesmo, não perca
+            a chance de oferecer o melhor cuidado para o seu gatinho!
+        </p>
+        <a class="btn btn-secondary-prad fs-5 py-3 px-5">Cadastre-se</a>
+    </div>
+</div>
 
-Welcome to your new app.

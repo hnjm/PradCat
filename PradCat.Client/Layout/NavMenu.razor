@@ -1,39 +1,61 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject NavigationManager Navigation
+@implements IDisposable
+
+<nav class="navbar navbar-expand-lg navbar-light @_navbarClass">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">PradCat.Client</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a href="" class="navbar-brand user-select-none">
+            <img src="images/site-assets/logo.png" alt="Logo da clínica PradCat." width="200">
+        </a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navContent">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="collapse navbar-collapse p-3 p-lg-0 bg-collapse" id="navContent" style="z-index: 100;">
+            <ul class="navbar-nav flex-grow-1 justify-content-xl-evenly justify-content-start">
+                <li class="nav-item me-md-2 me-xl-0">
+                    <a class="nav-link" href="#">Sobre nós</a>
+                </li>
+                <li class="nav-item me-md-2 me-xl-0">
+                    <a class="nav-link" href="#">Contato</a>
+                </li>
+                <li class="nav-item me-md-2 me-xl-0">
+                    <a class="nav-link" href="#">Serviços</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav flex-grow-1 justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link py-3 px-5 btn @_loginButtonClass" href="/css">Entrar</a>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
+    string _navbarClass { get; set; } = String.Empty;
+    string _loginButtonClass { get; set; } = String.Empty;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
+    protected override void OnInitialized()
     {
-        collapseNavMenu = !collapseNavMenu;
+        SetNavbarStyle(Navigation.Uri);
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    protected void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetNavbarStyle(e.Location);
+    }
+
+    void SetNavbarStyle(string url)
+    {
+        // var currentUri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var currentUri = Navigation.ToBaseRelativePath(url);
+        _navbarClass = String.IsNullOrEmpty(currentUri) ? "bg-transparent-prad" : "bg-white";
+        _loginButtonClass = String.IsNullOrEmpty(currentUri) ? "btn-outline-light-prad" : "btn-primary-prad";
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

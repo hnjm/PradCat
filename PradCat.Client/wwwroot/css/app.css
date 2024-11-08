@@ -1,23 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=KoHo:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+/* tags */
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 1em;
+    font-family: "Questrial", sans-serif;
 }
 
-h1:focus {
-    outline: none;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'KoHo', sans-serif;
 }
 
-a, .btn-link {
-    color: #0071c1;
+    h1:focus {
+        outline: none;
+    }
+
+/* classes */
+
+.text-primary-prad {
+    color: #23255D;
 }
 
-.btn-primary {
+.text-secondary-prad {
+    color: #28B8B0;
+}
+
+.text-offwhite-prad {
+    color: #f1f1f1;
+}
+
+.bg-transparent-prad {
+    background-color: transparent !important;
+}
+
+.bg-offwhite-prad {
+    background-color: #f1f1f1 !important;
+}
+
+.bg-dark-prad {
+    background-color: #141414 !important;
+}
+
+.bg-outline-primary-prad {
+    background-color: #DAEAFF !important;
+    border: 2px solid #0F63D4;
+}
+
+.btn:hover {
+    transition: 0.5s;
+    filter: drop-shadow(10px 15px 25px rgba(0, 0, 0, 0.5));
+}
+
+.btn-primary-prad {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #0F63D4;
+    border-radius: 50px;
 }
+
+    .btn-primary-prad:hover {
+        color: #fff;
+        background-color: #0B438F;
+    }
+
+.btn-secondary-prad {
+    color: #fff;
+    background-color: #28B8B0;
+    border-radius: 50px;
+}
+
+    .btn-secondary-prad:hover {
+        color: #fff;
+        background-color: #288983;
+    }
+
+.btn-outline-light-prad {
+    color: #fff;
+    background-color: transparent;
+    border: 2px solid #fff;
+    border-radius: 50px;
+}
+
+    .btn-outline-light-prad:hover {
+        color: #0F63D4;
+        background-color: #fff;
+    }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -35,6 +105,8 @@ a, .btn-link {
 .validation-message {
     color: red;
 }
+
+/* IDs*/
 
 #blazor-error-ui {
     background: lightyellow;
