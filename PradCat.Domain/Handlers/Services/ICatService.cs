@@ -9,5 +9,5 @@ public interface ICatService
     Task<Response<Cat>> UpdateAsync(UpdateCatRequest request);
     Task<Response<bool>> DeleteAsync(DeleteCatRequest request);
     Task<Response<Cat>> GetByIdAsync(GetCatByIdRequest request);
-    Task<Response<List<Cat>>> GetAllAsync(GetAllCatsRequest request);
+    Task<PagedResponse<List<Cat>>> GetAllAsync(GetAllCatsRequest request);
 }

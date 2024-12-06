@@ -21,7 +21,7 @@ public class Tutor
 
     [Required]
     [Column(TypeName = "NVARCHAR")]
-    [Length(11, 11, ErrorMessage = "Cpf must be a maximum of {0} characters.")]
+    [MaxLength(11, ErrorMessage = "CPF must be a maximum of {0} characters.")]
     public string Cpf { get; set; } = string.Empty;
 
     public List<Cat> Cats { get; set; } = new();

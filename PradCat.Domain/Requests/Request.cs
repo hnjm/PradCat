@@ -1,5 +1,8 @@
-﻿namespace PradCat.Domain.Requests;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PradCat.Domain.Requests;
 public abstract class Request
 {
-    public Guid UserId { get; set; }
+    [Required(ErrorMessage = "User Id is required.")]
+    public string UserId { get; set; } = string.Empty;
 }

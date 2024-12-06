@@ -9,8 +9,8 @@ public interface IAppointmentService
     Task<Response<Appointment>> UpdateAsync(UpdateAppointmentRequest request);
     Task<Response<bool>> DeleteAsync(DeleteAppointmentRequest request);
     Task<Response<Appointment>> GetByIdAsync(GetAppointmentByIdRequest request);
-    Task<Response<List<Appointment>>> GetAllAsync(GetAllAppointmentsRequest request);
-    Task<Response<List<Appointment>>> GetByDateRangeAsync(GetAppointmentsByDateRangeRequest request);
+    Task<PagedResponse<List<Appointment>>> GetAllAsync(GetAllAppointmentsRequest request);
+    Task<PagedResponse<List<Appointment>>> GetByDateRangeAsync(GetAppointmentsByDateRangeRequest request);
     Task<Response<bool>> CheckAvailabilityAsync(CheckAppointmentAvailbilityRequest request);
     Task<Response<bool>> CancelAsync(CancelAppointmentRequest request);
 }

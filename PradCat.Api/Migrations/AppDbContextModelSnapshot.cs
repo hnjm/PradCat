@@ -200,7 +200,7 @@ namespace PradCat.Api.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TutorId")
+                    b.Property<int?>("TutorId")
                         .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -221,7 +221,8 @@ namespace PradCat.Api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("TutorId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[TutorId] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -311,10 +312,11 @@ namespace PradCat.Api.Migrations
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
+                        .HasMaxLength(11)
                         .HasColumnType("NVARCHAR");
 
                     b.Property<string>("Name")
@@ -323,8 +325,6 @@ namespace PradCat.Api.Migrations
                         .HasColumnType("NVARCHAR");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.ToTable("Tutor");
                 });
@@ -434,8 +434,7 @@ namespace PradCat.Api.Migrations
                     b.HasOne("PradCat.Domain.Entities.Tutor", "Tutor")
                         .WithOne()
                         .HasForeignKey("PradCat.Api.Models.AppUser", "TutorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Tutor");
                 });
@@ -468,15 +467,6 @@ namespace PradCat.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Tutor");
-                });
-
-            modelBuilder.Entity("PradCat.Domain.Entities.Tutor", b =>
-                {
-                    b.HasOne("PradCat.Api.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PradCat.Domain.Entities.Cat", b =>

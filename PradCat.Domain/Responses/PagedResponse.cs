@@ -10,12 +10,12 @@ public class PagedResponse<T> : Response<T>
     public PagedResponse(
         T? data,
         string message,
-        bool success,
+        int statusCode,
         int totalCount,
         int totalPages,
         int pageSize,
         int currentPage)
-        : base(data, message, success)
+        : base(data, message, statusCode)
     {
         TotalCount = totalCount;
         TotalPages = totalPages;
@@ -23,12 +23,12 @@ public class PagedResponse<T> : Response<T>
         CurrentPage = currentPage;
     }
 
-    public static PagedResponse<T> SuccessPagedResponse(T? data, int totalCount, int pageSize, int currentPage, string message = "Request successful", bool success = true)
+    public static PagedResponse<T> SuccessPagedResponse(T? data, int totalCount, int pageSize, int currentPage, string message = "Request successful", int statusCode = 200)
     {
         int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        return new PagedResponse<T>(data, message, success, totalCount, totalPages, pageSize, currentPage);
+        return new PagedResponse<T>(data, message, statusCode, totalCount, totalPages, pageSize, currentPage);
     }
 
-    public static PagedResponse<T> ErrorPagedResponse(string message)
-        => new PagedResponse<T>(default, message, false, 0, 0, 0, 0);
+    public static PagedResponse<T> ErrorPagedResponse(string message, int statusCode = 400)
+        => new PagedResponse<T>(default, message, statusCode, 0, 0, 0, 0);
 }
