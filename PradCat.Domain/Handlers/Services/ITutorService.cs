@@ -5,9 +5,12 @@ using PradCat.Domain.Responses;
 namespace PradCat.Domain.Handlers.Services;
 public interface ITutorService
 {
-    Task<Response<Tutor>> CreateAsync(CreateTutorRequest request);
+    Task<Tutor?> CreateAsync(Tutor tutor);
+    Task<bool> DeleteAsync(int id);
     Task<Response<Tutor>> UpdateAsync(UpdateTutorRequest request);
-    Task<Response<bool>> DeleteAsync(DeleteTutorRequest request);
     Task<Response<Tutor>> GetByIdAsync(GetTutorByIdRequest request);
     Task<PagedResponse<List<Tutor>>> GetAllAsync(GetAllTutorsRequest request);
+
+    // Criar e deletar o tutor se tornou responsabilidade do usuario
+    // Quando criado ou deletado, automaticamente gera ou deleta o tutor
 }

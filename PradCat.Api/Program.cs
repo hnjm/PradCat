@@ -19,12 +19,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Services
-builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ITutorRepository, TutorRepository>();
 builder.Services.AddScoped<ITutorService, TutorService>();
+builder.Services.AddScoped<UserService>();
 
 // Identity
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication()
+    .AddCookie( options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.LoginPath = "v1/login";
+        options.LogoutPath = "v1/logout";
+    });
 builder.Services.AddAuthorization();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -54,6 +61,9 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseHttpsRedirection();
 app.MapControllers();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 app.Run();

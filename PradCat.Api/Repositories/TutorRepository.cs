@@ -23,11 +23,10 @@ public class TutorRepository : ITutorRepository
         return tutor;
     }
 
-    public async Task<bool> DeleteAsync(int id, string userId)
+    public async Task<bool> DeleteAsync(int id)
     {
         var tutor = await _context.Tutors.AsNoTracking()
-                                    .FirstOrDefaultAsync(x => x.Id == id &&
-                                                        x.AppUserId == userId);
+                                    .FirstOrDefaultAsync(x => x.Id == id);
 
         if (tutor == null)
             return false;

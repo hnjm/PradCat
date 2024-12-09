@@ -27,6 +27,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
                 .WithOne()
                 .HasForeignKey<AppUser>(u => u.TutorId)
                 .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        builder.Entity<Tutor>(entity =>
+        {
+            entity.HasOne<AppUser>()
+                .WithOne()
+                .HasForeignKey<Tutor>(t => t.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

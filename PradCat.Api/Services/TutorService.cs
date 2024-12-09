@@ -10,84 +10,32 @@ namespace PradCat.Api.Services;
 public class TutorService : ITutorService
 {
     private readonly ITutorRepository _tutorRepository;
-    private readonly UserService _userService;
 
-    public TutorService(ITutorRepository tutorRepository, UserService userService)
+    public TutorService(ITutorRepository tutorRepository)
     {
         _tutorRepository = tutorRepository;
-        _userService = userService;
     }
 
-    public async Task<Response<Tutor>> CreateAsync(CreateTutorRequest request)
+    public async Task<Tutor?> CreateAsync(Tutor tutor)
     {
-        try
+        if (string.IsNullOrEmpty(tutor.AppUserId))
         {
-            // Cria o usuario para login
-            var result = await _userService.CreateAsync(request.Email,
-                                                        request.PhoneNumber,
-                                                        request.Password);
-
-
-            if (!result.Succeeded || string.IsNullOrEmpty(result.UserId))
-            {
-                var errors = string.Join(", ", result.Errors
-                    ?? new List<string> { "User creation failed without specific errors." });
-
-                return Response<Tutor>.ErrorResponse(errors);
-            }
-
-            var tutor = new Tutor
-            {
-                Name = request.Name,
-                Address = request.Address,
-                Cpf = request.Cpf,
-                AppUserId = result.UserId
-            };
-
-            // Cria o tutor com fk de user
-            var createdTutor = await _tutorRepository.CreateAsync(tutor);
-
-            if (createdTutor.Id <= 0)
-            {
-                await _userService.DeleteAsync(result.UserId);
-                return Response<Tutor>.ErrorResponse("Could not create tutor.");
-            }
-
-            // se criou o tutor, atualiza user com fk de tutor
-            var updateResult = await _userService.UpdateFkAsync(result.UserId, createdTutor.Id);
-
-            if (!updateResult.Succeeded)
-            {
-                await _userService.DeleteAsync(result.UserId);
-                await _tutorRepository.DeleteAsync(createdTutor.Id, result.UserId); // testar se exclui em cascata
-                return Response<Tutor>.ErrorResponse("Could not create tutor.");
-            }
-
-            return Response<Tutor>.SuccessResponse(createdTutor, "Tutor created successfully.", 201);
+            return null;
         }
-        catch
-        {
-            return Response<Tutor>.ErrorResponse("An unexpected error occurred.");
-        }
+
+        var createdTutor = await _tutorRepository.CreateAsync(tutor);
+
+        return createdTutor;
     }
 
-    public async Task<Response<bool>> DeleteAsync(DeleteTutorRequest request)
+    public async Task<bool> DeleteAsync(int id)
     {
-        try
-        {
-            if (request.Id <= 0 || string.IsNullOrEmpty(request.UserId))
-                return Response<bool>.ErrorResponse("Arguments null or out of range.");
+        if (id <= 0)
+            return false;
 
-            var result = await _tutorRepository.DeleteAsync(request.Id, request.UserId);
+        var result = await _tutorRepository.DeleteAsync(id);
 
-            return result 
-                ? Response<bool>.SuccessResponse(result, "Tutor deleted successfully") 
-                : Response<bool>.ErrorResponse("Tutor not found", 404);
-        }
-        catch
-        {
-            return Response<bool>.ErrorResponse("An unexpected error occurred.");
-        }
+        return result;
     }
 
     public async Task<PagedResponse<List<Tutor>>> GetAllAsync(GetAllTutorsRequest request)
