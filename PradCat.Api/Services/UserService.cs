@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using PradCat.Api.Models;
 using PradCat.Domain.Entities;
 using PradCat.Domain.Handlers.Services;
@@ -21,7 +22,7 @@ public class UserService
         _signInManager = signInManager;
     }
 
-    public async Task<Response<string>> Login(LoginUserRequest request)
+    public async Task<Response<string>> LoginAsync(LoginUserRequest request)
     {
         try
         {
@@ -31,7 +32,7 @@ public class UserService
                 return Response<string>.SuccessResponse(string.Empty, "User logged in successfully.");
 
             else if (result.IsLockedOut)
-                return Response<string>.ErrorResponse("User locked out, try again later.");
+                return Response<string>.ErrorResponse("User locked out, try again later.", 403);
 
             else
                 return Response<string>.ErrorResponse("Invalid login attempt.");
@@ -42,7 +43,7 @@ public class UserService
         }
     }
 
-    public async Task<Response<string>> Logout()
+    public async Task<Response<string>> LogoutAsync()
     {
         try
         {
@@ -107,6 +108,49 @@ public class UserService
         catch
         {
             return Response<Tutor>.ErrorResponse("An unexpected error occurred.");
+        }
+    }
+
+    public async Task<Response<string>> ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        // busca pelo nome pois usarname e email sao iguais
+        try
+        {
+            var user = await _userManager.FindByNameAsync(request.Email);
+
+            if (user is null)
+                return Response<string>.ErrorResponse("User not found.", 404);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return !string.IsNullOrEmpty(token)
+                ? Response<string>.SuccessResponse(token)
+                : Response<string>.ErrorResponse("Failed to generate password reset token.");
+        }
+        catch
+        {
+            return Response<string>.ErrorResponse("An unexpected error occurred.");
+        }
+    }
+
+    public async Task<Response<bool>> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        try
+        {
+            // busca pelo nome pois usarname e email sao iguais
+            var user = await _userManager.FindByNameAsync(request.Email);
+            if (user is null)
+                return Response<bool>.ErrorResponse("User not found.", 404);
+
+            var result = await _userManager.ResetPasswordAsync(user, request.ResetCode, request.NewPassword);
+
+            return result.Succeeded
+                ? Response<bool>.SuccessResponse(true, "Reseted password successfully.")
+                : Response<bool>.ErrorResponse("Failed to reset password.");
+        }
+        catch
+        {
+            return Response<bool>.ErrorResponse("An unexpected error occurred.");
         }
     }
 

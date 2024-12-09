@@ -36,12 +36,19 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
+    options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedAccount = false;
+
     options.Password.RequireUppercase = false;
     options.Password.RequireDigit = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<AppDbContext>();
+
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+}).AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
