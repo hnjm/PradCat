@@ -4,7 +4,7 @@ namespace PradCat.Domain.Handlers.Repositories;
 public interface ICatRepository
 {
     Task<Cat> CreateAsync(Cat cat);
-    Task<Cat> UpdateAsync(Cat cat);
+    Task<Cat?> UpdateAsync(Cat cat);
     Task<bool> DeleteAsync(int id);
     Task<Cat?> GetByIdAsync(int id);
     Task<List<Cat>> GetAllAsync(int userId);

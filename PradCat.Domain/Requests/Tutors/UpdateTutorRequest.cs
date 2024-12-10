@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 
 namespace PradCat.Domain.Requests.Tutors;
-public class UpdateTutorRequest : Request
+public class UpdateTutorRequest
 {
     [JsonIgnore]
     public int Id { get; set; }

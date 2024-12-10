@@ -16,11 +16,6 @@ public class CatRepository : ICatRepository
 
     public async Task<Cat> CreateAsync(Cat cat)
     {
-        if (cat == null)
-        {
-            throw new ArgumentNullException("Cat is invalid.");
-        }
-
         await _context.Cats.AddAsync(cat);
         await _context.SaveChangesAsync();
 
@@ -29,9 +24,6 @@ public class CatRepository : ICatRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        if (id <= 0)
-            throw new ArgumentOutOfRangeException("Invalid Cat ID.");
-
         var cat = await _context.Cats.AsNoTracking()
                                     .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -59,9 +51,6 @@ public class CatRepository : ICatRepository
 
     public async Task<Cat?> GetByIdAsync(int id)
     {
-        if (id <= 0)
-            throw new ArgumentOutOfRangeException("Invalid Cat ID.");
-
         var cat = await _context.Cats.AsNoTracking()
                                     .Include(x => x.Tutor)
                                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -69,20 +58,25 @@ public class CatRepository : ICatRepository
         return cat;
     }
 
-    public async Task<Cat> UpdateAsync(Cat cat)
+    public async Task<Cat?> UpdateAsync(Cat cat)
     {
-        if (cat == null)
-            throw new ArgumentNullException("Cat is invalid.");
+        var updatedCat = await _context.Cats.AsNoTracking()
+                                            .FirstOrDefaultAsync(x => x.Id == cat.Id
+                                                                && x.TutorId == cat.TutorId);
+        if (updatedCat is not null)
+        {
+            updatedCat.Name = cat.Name;
+            updatedCat.Gender = cat.Gender;
+            updatedCat.BirthDate = cat.BirthDate;
+            updatedCat.Weight = cat.Weight;
+            updatedCat.Breed = cat.Breed;
+            updatedCat.IsNeutered = cat.IsNeutered;
 
-        var exist = await _context.Cats.AsNoTracking()
-                                            .AnyAsync(x => x.Id == cat.Id);
-        if (!exist)
-            throw new KeyNotFoundException("Cat not found");
+            _context.Cats.Update(updatedCat);
+            await _context.SaveChangesAsync();
+        }
 
-        _context.Cats.Update(cat);
-        await _context.SaveChangesAsync();
-
-        return cat;
+        return updatedCat;
     }
 }
 

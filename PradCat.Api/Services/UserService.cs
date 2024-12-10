@@ -60,6 +60,11 @@ public class UserService
     {
         try
         {
+            // verifica se usuario ja existe
+            var exists = await _userManager.FindByNameAsync(request.Email) is not null;
+            if (exists)
+                return Response<Tutor>.ErrorResponse("User already exists.", 409);
+
             var user = new AppUser
             {
                 UserName = request.Email,
@@ -160,13 +165,13 @@ public class UserService
         {
             var loggedUser = await _userManager.GetUserAsync(userContext);
             Console.WriteLine("logged user: " + loggedUser?.Id);
-            Console.WriteLine("request user: " + request.UserId);
+            Console.WriteLine("request user: " + request.Id);
 
             // Se o id do usuario logado for diferente do id do request
-            if (loggedUser is null || !Equals(loggedUser.Id, request.UserId))
+            if (loggedUser is null || !Equals(loggedUser.Id, request.Id))
                 return Response<bool>.ErrorResponse("Not allowed to delete user.", 401);
 
-            var result = await DeleteAsync(request.UserId);
+            var result = await DeleteAsync(request.Id);
 
             if (!result.Succeeded)
                 return Response<bool>.ErrorResponse("Failed to delete user");

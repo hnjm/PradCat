@@ -22,12 +22,12 @@ public class TutorController : ControllerBase
     {
         var response = await _tutorService.GetAllAsync(request);
 
-        if (response.StatusCode == 200)
-            return Ok(response);
-        else if (response.StatusCode == 404)
-            return NotFound(response);
-        else
-            return BadRequest(response);
+        return response.StatusCode switch
+        {
+            200 => Ok(response),
+            404 => NotFound(response),
+            _ => BadRequest(response)
+        };
     }
 
     [HttpGet("{id:int}")]
@@ -36,25 +36,27 @@ public class TutorController : ControllerBase
         GetTutorByIdRequest request = new GetTutorByIdRequest { Id = id };
         var response = await _tutorService.GetByIdAsync(request);
 
-        if (response.StatusCode == 200)
-            return Ok(response);
-        else if (response.StatusCode == 404)
-            return NotFound(response);
-        else
-            return BadRequest(response);
+        return response.StatusCode switch
+        {
+            200 => Ok(response),
+            404 => NotFound(response),
+            _ => BadRequest(response)
+        };
     }
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTutorRequest request)
     {
         request.Id = id;
-        var response = await _tutorService.UpdateAsync(request);
+        var userContext = HttpContext.User;
+        var response = await _tutorService.UpdateAsync(request, userContext);
 
-        if (response.StatusCode == 200)
-            return Ok(response);
-        else if (response.StatusCode == 404)
-            return NotFound(response);
-        else
-            return BadRequest(response);
+        return response.StatusCode switch
+        {
+            200 => Ok(response),
+            401 => Unauthorized(response),
+            404 => NotFound(response),
+            _ => BadRequest(response)
+        };
     }
 }

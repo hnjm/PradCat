@@ -1,19 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using PradCat.Api.Models;
 using PradCat.Domain.Entities;
 using PradCat.Domain.Handlers.Repositories;
 using PradCat.Domain.Handlers.Services;
 using PradCat.Domain.Requests.Tutors;
 using PradCat.Domain.Responses;
+using System.Security.Claims;
 
 namespace PradCat.Api.Services;
 
 public class TutorService : ITutorService
 {
     private readonly ITutorRepository _tutorRepository;
+    private readonly UserManager<AppUser> _userManager;
 
-    public TutorService(ITutorRepository tutorRepository)
+    public TutorService(ITutorRepository tutorRepository, UserManager<AppUser> userManager)
     {
         _tutorRepository = tutorRepository;
+        _userManager = userManager;
     }
 
     public async Task<Tutor?> CreateAsync(Tutor tutor)
@@ -68,7 +73,7 @@ public class TutorService : ITutorService
         try
         {
             if (request.Id <= 0)
-                return Response<Tutor>.ErrorResponse("Arguments null or out of range.");
+                return Response<Tutor>.ErrorResponse("Id out of range.");
 
             var tutor = await _tutorRepository.GetByIdAsync(request.Id);
 
@@ -83,21 +88,26 @@ public class TutorService : ITutorService
         }
     }
 
-    public async Task<Response<Tutor>> UpdateAsync(UpdateTutorRequest request)
+    public async Task<Response<Tutor>> UpdateAsync(UpdateTutorRequest request, ClaimsPrincipal userContext)
     {
         try
         {
-            if (request.Id <= 0 || string.IsNullOrEmpty(request.UserId))
-                return Response<Tutor>.ErrorResponse("Arguments null or out of range.");
+            if (request.Id <= 0)
+                return Response<Tutor>.ErrorResponse("Id out of range.");
 
-            var tutor = new Tutor
-            {
-                Id = request.Id,
-                Name = request.Name,
-                Address = request.Address,
-                Cpf = request.Cpf,
-                AppUserId = request.UserId
-            };
+            var tutor = await _tutorRepository.GetByIdAsync(request.Id);
+            var loggedUser = await _userManager.GetUserAsync(userContext);
+
+            if (tutor is null || loggedUser is null)
+                return Response<Tutor>.ErrorResponse("Tutor not found.", 404);
+
+            // Compara o id de usuario do tutor com o id de usuario que esta logado
+            if (!Equals(tutor.AppUserId, loggedUser.Id))
+                return Response<Tutor>.ErrorResponse("Not allowed to update user.", 401);
+
+            tutor.Name = request.Name;
+            tutor.Address = request.Address;
+            tutor.Cpf = request.Cpf;
 
             var updatedTutor = await _tutorRepository.UpdateAsync(tutor);
 

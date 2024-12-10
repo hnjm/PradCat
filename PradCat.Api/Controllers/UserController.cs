@@ -26,9 +26,12 @@ public class UserController : ControllerBase
     {
         var response = await _userService.CreateAsync(request);
 
-        return response.StatusCode == 201
-            ? Created($"/v1/tutors/{response.Data!.Id}", response)
-            : BadRequest(response);
+        return response.StatusCode switch
+        {
+            201 => Created($"/v1/tutors/{response.Data!.Id}", response),
+            409 => Conflict(response),
+            _ => BadRequest(response)
+        };
     }
 
     [HttpPost("login")]
@@ -85,15 +88,15 @@ public class UserController : ControllerBase
     [HttpDelete("users/delete/{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        DeleteUserRequest request = new DeleteUserRequest { UserId = id };
-        var userContext = HttpContext.User; // posteriormente tratar 401
+        DeleteUserRequest request = new DeleteUserRequest { Id = id };
+        var userContext = HttpContext.User;
         var response = await _userService.DeleteAsync(request, userContext);
 
         return response.StatusCode switch
         {
             200 => Ok(response),
             401 => Unauthorized(response),
-            _ => BadRequest(response),
+            _ => BadRequest(response)
         };
     }
 }
