@@ -19,9 +19,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Services
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ITutorRepository, TutorRepository>();
 builder.Services.AddScoped<ITutorService, TutorService>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ICatRepository, CatRepository>();
+builder.Services.AddScoped<ICatService, CatService>();
 
 // Identity
 builder.Services.AddAuthentication()

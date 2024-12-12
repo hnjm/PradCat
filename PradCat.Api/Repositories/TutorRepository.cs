@@ -38,22 +38,22 @@ public class TutorRepository : ITutorRepository
     }
 
     public IOrderedQueryable<Tutor>? GetAll(int pageNumber, int pageSize)
-    {
-        var query = _context.Tutors.AsNoTracking()
+        => _context.Tutors.AsNoTracking()
                                     .Include(x => x.Cats)
                                     .OrderBy(x => x.Name);
 
-        return query;
-    }
 
     public async Task<Tutor?> GetByIdAsync(int id)
-    {
-        var tutor = await _context.Tutors.AsNoTracking()
+        => await _context.Tutors.AsNoTracking()
                                     .Include(x => x.Cats)
                                     .FirstOrDefaultAsync(x => x.Id == id);
 
-        return tutor;
-    }
+
+    public async Task<Tutor?> GetByUserIdAsync(string userId)
+        => await _context.Tutors.AsNoTracking()
+                                .Include(x => x.Cats)
+                                .FirstOrDefaultAsync(x => x.AppUserId == userId);
+
 
     public async Task<Tutor?> UpdateAsync(Tutor tutor)
     {

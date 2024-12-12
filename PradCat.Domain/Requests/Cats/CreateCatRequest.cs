@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace PradCat.Domain.Requests.Cats;
-public class CreateCatRequest : Request
+public class CreateCatRequest
 {
     [Required(ErrorMessage = "Cat's name is required.")]
     [MaxLength(100)]
@@ -19,8 +19,5 @@ public class CreateCatRequest : Request
     public string? Breed { get; set; }
 
     public bool? IsNeutered { get; set; }
-
-    [Required(ErrorMessage = "Tutor's ID is required.")]
-    public int TutorId { get; set; }
 
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.Data;
 using PradCat.Api.Models;
 using PradCat.Domain.Entities;
-using PradCat.Domain.Handlers.Services;
 using PradCat.Domain.Requests.Users;
 using PradCat.Domain.Responses;
 using System.Security.Claims;
@@ -11,13 +10,11 @@ namespace PradCat.Api.Services;
 
 public class UserService
 {
-    private readonly ITutorService _tutorService;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
 
-    public UserService(ITutorService tutorService, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
     {
-        _tutorService = tutorService;
         _userManager = userManager;
         _signInManager = signInManager;
     }
@@ -56,63 +53,23 @@ public class UserService
         }
     }
 
-    public async Task<Response<Tutor>> CreateAsync(CreateUserRequest request)
+    public async Task<Response<AppUser>> CreateAsync(AppUser user, string password)
     {
         try
         {
-            // verifica se usuario ja existe
-            var exists = await _userManager.FindByNameAsync(request.Email) is not null;
+            var exists = await UserExistsAsync(user.UserName!);
             if (exists)
-                return Response<Tutor>.ErrorResponse("User already exists.", 409);
+                return Response<AppUser>.ErrorResponse("User already exist.", 409);
 
-            var user = new AppUser
-            {
-                UserName = request.Email,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber
-            };
+            var result = await _userManager.CreateAsync(user, password);
 
-            var tutor = new Tutor
-            {
-                Name = request.Name,
-                Address = request.Address,
-                Cpf = request.Cpf,
-                AppUserId = user.Id
-            };
-
-            //Cria o usuario para login
-            var result = await _userManager.CreateAsync(user, request.Password);
-
-            if (!result.Succeeded)
-                return Response<Tutor>.ErrorResponse("Failed to create user.");
-
-            // Cria o tutor com fk do usuario
-            tutor = await _tutorService.CreateAsync(tutor);
-
-            // Se nao criou o tutor, deleta o usuario
-            if (tutor is null || tutor.Id <= 0)
-            {
-                await DeleteAsync(user.Id);
-                return Response<Tutor>.ErrorResponse("Failed to create user.");
-            }
-
-            // Se criou o tutor, atualiza a fk do tutor na tabela do usuario
-            result = await UpdateFkAsync(user.Id, tutor.Id);
-
-            // Se nao vinculou usuario com tutor, deleta ambos
-            if (!result.Succeeded)
-            {
-                await _tutorService.DeleteAsync(tutor.Id);
-                await DeleteAsync(user.Id);
-
-                return Response<Tutor>.ErrorResponse("Failed to bind user data.");
-            }
-
-            return Response<Tutor>.SuccessResponse(tutor, "User created successfully.", 201);
+            return result.Succeeded
+                ? Response<AppUser>.SuccessResponse(user, "User created successfully.", 201)
+                : Response<AppUser>.ErrorResponse("Failed to create user.");
         }
         catch
         {
-            return Response<Tutor>.ErrorResponse("An unexpected error occurred.");
+            return Response<AppUser>.ErrorResponse("An unexpected error occurred.");
         }
     }
 
@@ -164,8 +121,6 @@ public class UserService
         try
         {
             var loggedUser = await _userManager.GetUserAsync(userContext);
-            Console.WriteLine("logged user: " + loggedUser?.Id);
-            Console.WriteLine("request user: " + request.Id);
 
             // Se o id do usuario logado for diferente do id do request
             if (loggedUser is null || !Equals(loggedUser.Id, request.Id))
@@ -199,17 +154,16 @@ public class UserService
         return result;
     }
 
-    public async Task<IdentityResult> UpdateFkAsync(string id, int tutorId)
+    public async Task<IdentityResult> UpdateFkAsync(AppUser user, Tutor tutor)
     {
-        var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-        {
-            return IdentityResult.Failed(new IdentityError { Description = "Failed to find user." }); ;
-        }
-
-        user.TutorId = tutorId;
+        user.TutorId = tutor.Id;
         var result = await _userManager.UpdateAsync(user);
         return result;
     }
+
+    public async Task<bool> UserExistsAsync(string userName)
+        => await _userManager.FindByNameAsync(userName) is not null;
+
+    public async Task<AppUser?> GetLoggedUserAsync(ClaimsPrincipal userContext)
+        => await _userManager.GetUserAsync(userContext);
 }

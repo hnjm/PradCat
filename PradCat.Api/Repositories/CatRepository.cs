@@ -19,7 +19,12 @@ public class CatRepository : ICatRepository
         await _context.Cats.AddAsync(cat);
         await _context.SaveChangesAsync();
 
-        return cat;
+        var savedCat = await _context.Cats.AsNoTracking()
+                                            .Include(c => c.Tutor)
+                                            .FirstOrDefaultAsync(c => c.Id == cat.Id);
+
+
+        return savedCat!;
     }
 
     public async Task<bool> DeleteAsync(int id)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PradCat.Api.Services;
 using PradCat.Domain.Handlers.Services;
 using PradCat.Domain.Requests.Tutors;
 
@@ -11,10 +12,12 @@ namespace PradCat.Api.Controllers;
 public class TutorController : ControllerBase
 {
     private readonly ITutorService _tutorService;
+    private readonly UserService _userService;
 
-    public TutorController(ITutorService tutorService)
+    public TutorController(ITutorService tutorService, UserService userService)
     {
         _tutorService = tutorService;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -49,7 +52,13 @@ public class TutorController : ControllerBase
     {
         request.Id = id;
         var userContext = HttpContext.User;
-        var response = await _tutorService.UpdateAsync(request, userContext);
+        var user = await _userService.GetLoggedUserAsync(userContext);
+
+        if (user is null)
+            return StatusCode(403, "Not allowed to edit tutor.");
+        
+
+        var response = await _tutorService.UpdateAsync(request, user.Id);
 
         return response.StatusCode switch
         {

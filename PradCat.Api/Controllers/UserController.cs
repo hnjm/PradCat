@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using PradCat.Api.Models;
 using PradCat.Api.Services;
+using PradCat.Domain.Entities;
 using PradCat.Domain.Handlers.Services;
-using PradCat.Domain.Requests.Tutors;
 using PradCat.Domain.Requests.Users;
 
 namespace PradCat.Api.Controllers;
@@ -15,7 +16,7 @@ public class UserController : ControllerBase
     private readonly ITutorService _tutorService;
     private readonly UserService _userService;
 
-    public UserController(ITutorService tutorService , UserService userService)
+    public UserController(ITutorService tutorService, UserService userService)
     {
         _tutorService = tutorService;
         _userService = userService;
@@ -24,14 +25,51 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(CreateUserRequest request)
     {
-        var response = await _userService.CreateAsync(request);
-
-        return response.StatusCode switch
+        // Cria o usuario de login
+        var user = new AppUser
         {
-            201 => Created($"/v1/tutors/{response.Data!.Id}", response),
-            409 => Conflict(response),
-            _ => BadRequest(response)
+            UserName = request.Email,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber
         };
+
+        var userResponse = await _userService.CreateAsync(user, request.Password);
+
+        if (userResponse.StatusCode == 409)
+            return Conflict(userResponse);
+
+        if (userResponse.StatusCode == 400)
+            return BadRequest(userResponse);
+
+        // Cria o tutor
+        var tutor = new Tutor
+        {
+            Name = request.Name,
+            Address = request.Address,
+            Cpf = request.Cpf,
+            AppUserId = userResponse.Data!.Id
+        };
+
+        var tutorResponse = await _tutorService.CreateAsync(tutor);
+
+        if (tutorResponse.StatusCode == 400)
+        {
+            await _userService.DeleteAsync(userResponse.Data!.Id);
+            return BadRequest(tutorResponse);
+        }
+
+        // Atualiza a fk do usuario com o id do tutor
+        var bindUserWithTutorResult = await _userService.UpdateFkAsync(userResponse.Data!, tutorResponse.Data!);
+
+        if (bindUserWithTutorResult.Succeeded)
+            return Created($"/v1/tutors/{tutorResponse.Data!.Id}", tutorResponse);
+        else
+        {
+            await _tutorService.DeleteAsync(tutorResponse.Data!.Id);
+            await _userService.DeleteAsync(userResponse.Data.Id);
+
+            return BadRequest(tutorResponse);
+        }
     }
 
     [HttpPost("login")]

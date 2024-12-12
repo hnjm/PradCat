@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PradCat.Domain.Entities;
 
@@ -32,7 +33,9 @@ public class Cat
     public bool? IsNeutered { get; set; }
 
     public int TutorId { get; set; }
-    public required Tutor Tutor { get; set; }
+
+    [JsonIgnore]
+    public Tutor Tutor { get; set; } = null!;
 
     public List<Appointment> Appointments { get; set; } = new();
 }

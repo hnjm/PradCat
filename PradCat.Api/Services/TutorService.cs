@@ -1,36 +1,35 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using PradCat.Api.Models;
+﻿using Microsoft.EntityFrameworkCore;
 using PradCat.Domain.Entities;
 using PradCat.Domain.Handlers.Repositories;
 using PradCat.Domain.Handlers.Services;
 using PradCat.Domain.Requests.Tutors;
 using PradCat.Domain.Responses;
-using System.Security.Claims;
 
 namespace PradCat.Api.Services;
 
 public class TutorService : ITutorService
 {
     private readonly ITutorRepository _tutorRepository;
-    private readonly UserManager<AppUser> _userManager;
 
-    public TutorService(ITutorRepository tutorRepository, UserManager<AppUser> userManager)
+    public TutorService(ITutorRepository tutorRepository)
     {
         _tutorRepository = tutorRepository;
-        _userManager = userManager;
     }
 
-    public async Task<Tutor?> CreateAsync(Tutor tutor)
+    public async Task<Response<Tutor>> CreateAsync(Tutor tutor)
     {
-        if (string.IsNullOrEmpty(tutor.AppUserId))
+        try
         {
-            return null;
+            var createdTutor = await _tutorRepository.CreateAsync(tutor);
+
+            return createdTutor is not null
+                ? Response<Tutor>.SuccessResponse(createdTutor, "Tutor created successfully.", 201)
+                : Response<Tutor>.ErrorResponse("Failed to create tutor.");
         }
-
-        var createdTutor = await _tutorRepository.CreateAsync(tutor);
-
-        return createdTutor;
+        catch
+        {
+            return Response<Tutor>.ErrorResponse("An unexpected error occurred.");
+        }
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -88,7 +87,7 @@ public class TutorService : ITutorService
         }
     }
 
-    public async Task<Response<Tutor>> UpdateAsync(UpdateTutorRequest request, ClaimsPrincipal userContext)
+    public async Task<Response<Tutor>> UpdateAsync(UpdateTutorRequest request, string loggedUserId)
     {
         try
         {
@@ -96,13 +95,12 @@ public class TutorService : ITutorService
                 return Response<Tutor>.ErrorResponse("Id out of range.");
 
             var tutor = await _tutorRepository.GetByIdAsync(request.Id);
-            var loggedUser = await _userManager.GetUserAsync(userContext);
 
-            if (tutor is null || loggedUser is null)
+            if (tutor is null)
                 return Response<Tutor>.ErrorResponse("Tutor not found.", 404);
 
             // Compara o id de usuario do tutor com o id de usuario que esta logado
-            if (!Equals(tutor.AppUserId, loggedUser.Id))
+            if (!Equals(tutor.AppUserId, loggedUserId))
                 return Response<Tutor>.ErrorResponse("Not allowed to update user.", 401);
 
             tutor.Name = request.Name;
@@ -121,4 +119,8 @@ public class TutorService : ITutorService
 
         }
     }
+
+    public async Task<Tutor?> GetByUserIdAsync(string userId)
+        => await _tutorRepository.GetByUserIdAsync(userId);
+
 }
