@@ -46,7 +46,7 @@ public class TutorService : ITutorService
     {
         try
         {
-            var query = _tutorRepository.GetAll(request.PageNumber, request.PageSize);
+            var query = _tutorRepository.GetAll();
 
             if (query == null)
                 return PagedResponse<List<Tutor>>.ErrorPagedResponse("No tutor has been found.", 404);
@@ -78,7 +78,7 @@ public class TutorService : ITutorService
 
             return tutor is not null
                 ? Response<Tutor>.SuccessResponse(tutor)
-                : Response<Tutor>.ErrorResponse("Tutor not found", 404);
+                : Response<Tutor>.ErrorResponse("Tutor not found.", 404);
         }
         catch
         {
@@ -101,7 +101,7 @@ public class TutorService : ITutorService
 
             // Compara o id de usuario do tutor com o id de usuario que esta logado
             if (!Equals(tutor.AppUserId, loggedUserId))
-                return Response<Tutor>.ErrorResponse("Not allowed to update user.", 401);
+                return Response<Tutor>.ErrorResponse("Not allowed to update user.", 403);
 
             tutor.Name = request.Name;
             tutor.Address = request.Address;
@@ -110,8 +110,8 @@ public class TutorService : ITutorService
             var updatedTutor = await _tutorRepository.UpdateAsync(tutor);
 
             return updatedTutor is not null
-                ? Response<Tutor>.SuccessResponse(updatedTutor, "Tutor updated successfully")
-                : Response<Tutor>.ErrorResponse("Tutor not found", 404);
+                ? Response<Tutor>.SuccessResponse(updatedTutor, "Tutor updated successfully.")
+                : Response<Tutor>.ErrorResponse("Tutor not found.", 404);
         }
         catch
         {

@@ -1,5 +1,5 @@
 ﻿namespace PradCat.Domain.Requests.Appointments;
-public class CancelAppointmentRequest : Request
+public class CancelAppointmentRequest
 {
     public int Id { get; set; }
 }

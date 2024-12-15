@@ -37,7 +37,7 @@ public class TutorRepository : ITutorRepository
         return true;
     }
 
-    public IOrderedQueryable<Tutor>? GetAll(int pageNumber, int pageSize)
+    public IOrderedQueryable<Tutor>? GetAll()
         => _context.Tutors.AsNoTracking()
                                     .Include(x => x.Cats)
                                     .OrderBy(x => x.Name);
@@ -57,19 +57,9 @@ public class TutorRepository : ITutorRepository
 
     public async Task<Tutor?> UpdateAsync(Tutor tutor)
     {
-        var updatedTutor = await _context.Tutors.AsNoTracking()
-                                            .FirstOrDefaultAsync(x => x.Id == tutor.Id
-                                                                && x.AppUserId == tutor.AppUserId);
-        if (updatedTutor is not null)
-        {
-            updatedTutor.Name = tutor.Name;
-            updatedTutor.Address = tutor.Address;
-            updatedTutor.Cpf = tutor.Cpf;
+        _context.Tutors.Update(tutor);
+        await _context.SaveChangesAsync();
 
-            _context.Tutors.Update(updatedTutor);
-            await _context.SaveChangesAsync();
-        }
-
-        return updatedTutor;
+        return tutor;
     }
 }

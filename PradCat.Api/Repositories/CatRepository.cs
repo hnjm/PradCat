@@ -41,47 +41,26 @@ public class CatRepository : ICatRepository
         return true;
     }
 
-    public async Task<List<Cat>> GetAllAsync(int userId)
-    {
-        if (userId <= 0)
-            throw new ArgumentException("Invalid user ID.");
+    public IOrderedQueryable<Cat>? GetAll(string userId)
+        => _context.Cats.AsNoTracking()
+                        .Include(x => x.Tutor)
+                        .Where(x => x.Tutor.AppUserId == userId)
+                        .OrderBy(x => x.Name);
+ 
 
-        var cats = await _context.Cats.AsNoTracking()
+    public async Task<Cat?> GetByIdAsync(int id, string userId)
+        => await _context.Cats.AsNoTracking()
                                     .Include(x => x.Tutor)
-                                    .Where(x => x.TutorId == userId)
-                                    .ToListAsync();
+                                    .FirstOrDefaultAsync(x => x.Id == id 
+                                                        && x.Tutor.AppUserId == userId);
 
-        return cats;
-    }
-
-    public async Task<Cat?> GetByIdAsync(int id)
-    {
-        var cat = await _context.Cats.AsNoTracking()
-                                    .Include(x => x.Tutor)
-                                    .FirstOrDefaultAsync(x => x.Id == id);
-
-        return cat;
-    }
 
     public async Task<Cat?> UpdateAsync(Cat cat)
     {
-        var updatedCat = await _context.Cats.AsNoTracking()
-                                            .FirstOrDefaultAsync(x => x.Id == cat.Id
-                                                                && x.TutorId == cat.TutorId);
-        if (updatedCat is not null)
-        {
-            updatedCat.Name = cat.Name;
-            updatedCat.Gender = cat.Gender;
-            updatedCat.BirthDate = cat.BirthDate;
-            updatedCat.Weight = cat.Weight;
-            updatedCat.Breed = cat.Breed;
-            updatedCat.IsNeutered = cat.IsNeutered;
+        _context.Cats.Update(cat);
+        await _context.SaveChangesAsync();
 
-            _context.Cats.Update(updatedCat);
-            await _context.SaveChangesAsync();
-        }
-
-        return updatedCat;
+        return cat;
     }
 }
 

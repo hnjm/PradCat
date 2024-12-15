@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PradCat.Domain.Requests.Cats;
-public class UpdateCatRequest : Request
+public class UpdateCatRequest
 {
+    [JsonIgnore]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Cat's name is required.")]
@@ -21,7 +23,4 @@ public class UpdateCatRequest : Request
     public string? Breed { get; set; }
 
     public bool? IsNeutered { get; set; }
-
-    [Required(ErrorMessage = "Tutor's ID is required.")]
-    public int TutorId { get; set; }
 }

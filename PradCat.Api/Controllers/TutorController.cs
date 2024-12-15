@@ -63,7 +63,7 @@ public class TutorController : ControllerBase
         return response.StatusCode switch
         {
             200 => Ok(response),
-            401 => Unauthorized(response),
+            403 => StatusCode(403, response),
             404 => NotFound(response),
             _ => BadRequest(response)
         };

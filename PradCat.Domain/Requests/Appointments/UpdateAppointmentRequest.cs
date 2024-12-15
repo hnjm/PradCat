@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace PradCat.Domain.Requests.Appointments;
-public class UpdateAppointmentRequest : Request
+public class UpdateAppointmentRequest
 {
     public int Id { get; set; }
 

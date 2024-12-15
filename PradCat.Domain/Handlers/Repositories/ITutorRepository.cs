@@ -8,5 +8,5 @@ public interface ITutorRepository
     Task<bool> DeleteAsync(int id);
     Task<Tutor?> GetByIdAsync(int id);
     Task<Tutor?> GetByUserIdAsync(string userId);
-    IOrderedQueryable<Tutor>? GetAll(int pageNumber, int pageSize);
+    IOrderedQueryable<Tutor>? GetAll();
 }

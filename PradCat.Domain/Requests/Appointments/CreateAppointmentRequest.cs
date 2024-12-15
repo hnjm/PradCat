@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace PradCat.Domain.Requests.Appointments;
-public class CreateAppointmentRequest : Request
+public class CreateAppointmentRequest
 {
     [Required(ErrorMessage = "DateTime is required.")]
     [DataType(DataType.DateTime)]

@@ -1,5 +1,5 @@
 ﻿namespace PradCat.Domain.Requests.Cats;
-public class DeleteCatRequest : Request
+public class DeleteCatRequest
 {
     public int Id { get; set; }
 }
